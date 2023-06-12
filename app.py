@@ -7,16 +7,19 @@ def main(page: ft.Page):
     page.title = "Jogo de Adivinhação"
     page.horizontal_alignment = "center"
     page.bgcolor = "white"
-    page.window_full_screen = True          
+    page.window_full_screen = True
+    
 
     random_num = randint(1,30)
-    global contagem, num_entrou
+    global contagem, num_entrou, quantidade_num
     contagem = 0
     num_entrou = []
+
 
     def vai_jogar_sim(e):
         img = ft.Image(src=f"Why_Man-removebg-preview.png", width=150,height=150)
         titulo = ft.Text(value="Jogo de Adivinhação\n", size=50, color="black", font_family="Forte")
+
         vai_jogar = ft.Text("Se abriu, é pra jogar né!", size=25, color="black")
         page.clean()
         page.add(img, titulo, vai_jogar, ft.ElevatedButton("Iniciar", bgcolor="green", color="white", on_click=escolhe_qtd))       
@@ -43,47 +46,45 @@ def main(page: ft.Page):
             page.add(erro)
             page.update()
 
-    def opcao_qtd(e):
-        global quantidade_num
-
-        qtd_num = int(quantidade_num.value)
-
-
-        if not quantidade_num.value:
-            quantidade_num.error_text = "Você precisa digitar a quantidade de vezes para tentar!"
-            page.update()
-        elif qtd_num > 10:
-            quantidade_num.error_text = "Digite um número menor ou igual a 10!"
-            page.update()
-        else:
-            text = ft.Text(f"Quantidade enviada: {qtd_num}", size=15, color="blue") 
-            page.add(text, ft.ElevatedButton("Tentar", on_click=quantidade, bgcolor="blue", color="white"))
-            page.update()
-
     def escolhe_qtd(e):
         global quantidade_num
-        
+
         img = ft.Image(src=f"Why_Man-removebg-preview.png", width=150,height=150)
         titulo = ft.Text(value="Jogo de Adivinhação\n", size=50, color="black", font_family="Forte")
         page.clean()
         page.add(img, titulo)
         page.update()
 
-        instrucao = ft.Text('(>>>>> Foi sorteado um número entre 1 e 30 <<<<<)', size=20, color="black")
         text = ft.Text('Digite a quantidade de vezes que quer tentar sendo o máximo, 10 vezes!',size=20, color="black")
         quantidade_num = ft.TextField(label="Digite quantas vezes tentará", text_align="center", color="black", width=350, border_radius=10, on_submit=opcao_qtd)
         page.add(
-            instrucao,
             text,
             quantidade_num,
             ft.ElevatedButton("Enviar", on_click=opcao_qtd, color="white")
             )
         page.update()
 
-    def quantidade(e):
-        global qtd_vezes
+    def opcao_qtd(e):
         global quantidade_num
 
+
+        if not quantidade_num.value:
+            quantidade_num.error_text = "Você precisa digitar a quantidade de vezes para tentar!"
+            page.update()
+        else:
+            qtd_num = int(quantidade_num.value)
+            
+            if qtd_num > 10:
+                quantidade_num.error_text = "Digite um número menor ou igual a 10!"
+                page.update()
+            else:
+                text = ft.Text(f"Quantidade enviada: {qtd_num}", size=15, color="blue") 
+                page.add(text, ft.ElevatedButton("Tentar", on_click=quantidade, bgcolor="blue", color="white"))
+                page.update()
+
+    def quantidade(e):
+        global qtd_vezes, quantidade_num
+        
         img = ft.Image(src=f"Why_Man-removebg-preview.png", width=150,height=150)
         titulo = ft.Text(value="Jogo de Adivinhação\n", size=50, color="black", font_family="Forte")
         page.clean()
@@ -92,24 +93,20 @@ def main(page: ft.Page):
 
         qtd_num = int(quantidade_num.value)
         qtd_vezes = ft.Text(f'\n\nVocê terá {qtd_num} chances para tentar acertar.',size=20, color="black")
-        page.add(qtd_vezes,
-                 ft.ElevatedButton("OK", on_click=entra_num, color="white")
-                 )
+        page.add(qtd_vezes, ft.ElevatedButton("OK", on_click=entra_num, color="white"))
         page.update()
     
     def entra_num(e):
         global entrada_num
-
+        
         entrada_num = ft.TextField(label="Digite um número", text_align="center", color="black", width=350, border_radius=10, on_submit=verifica)
-        page.add(entrada_num, ft.ElevatedButton("Verificar", on_click=verifica, color="white"))
+        page.add(entrada_num , ft.ElevatedButton("Verificar", on_click=verifica, color="white"))
         page.update()
 
     def verifica(e):
-        global entrada_num, qtd_vezes, contagem
-
+        global entrada_num, qtd_vezes, contagem    
         contagem += 1
-        
-        
+
         if not entrada_num.value:
             entrada_num.error_text = "Você precisa digitar um número!"
             page.update()
@@ -121,9 +118,10 @@ def main(page: ft.Page):
             if num == random_num:
                 img = ft.Image(src=f"Why_Man-removebg-preview.png", width=150,height=150)
                 titulo = ft.Text(value="Jogo de Adivinhação\n", size=50, color="black", font_family="Forte")
-                win = ft.Text(f"Parabéns, você acertou! Número sorteado foi {random_num}", size=20, color="black")
+                win = ft.Text(f"Parabéns, você acertou na {contagem}ª tentativa! Número sorteado foi {random_num}", size=20, color="black")
+                texto = ft.Text(f"Números digitados: {num_entrou}.", size=20, color="black")
                 page.clean()
-                page.add(img, titulo, win)
+                page.add(img, titulo, win, texto)
                 page.update()
                 page.add(ft.ElevatedButton("Sair", on_click=reinicia_jogo, color="white"))
                 return
@@ -142,21 +140,21 @@ def main(page: ft.Page):
             elif num > random_num:
                 img = ft.Image(src=f"Why_Man-removebg-preview.png", width=150,height=150)
                 titulo = ft.Text(value="Jogo de Adivinhação\n", size=50, color="black", font_family="Forte")
+                maior = ft.Text(f"Hmm, {num} é maior, digite um número menor.\n", size=20, color="black")
                 tentativas = ft.Text(f'Tentativa: {contagem + 1}', size=20, color="black")
-                maior = ft.Text(f"Hmmm, o número {num} é maior que o sorteado.", size=20, color="black")
                 page.clean()
-                page.add(img, titulo, tentativas, maior)
+                page.add(img, titulo, maior, tentativas)
                 entra_num(e)
 
             elif num < random_num:
                 img = ft.Image(src=f"Why_Man-removebg-preview.png", width=150,height=150)
                 titulo = ft.Text(value="Jogo de Adivinhação\n", size=50, color="black", font_family="Forte")
+                menor = ft.Text(f"Hmm, {num} é menor, digite um número maior.\n", size=20, color="black")
                 tentativas = ft.Text(f'Tentativa: {contagem + 1}', size=20, color="black")
-                menor = ft.Text(f"Hmmm, o número {num} é menor que o sorteado.", size=20, color="black")
                 page.clean()
-                page.add(img, titulo, tentativas, menor)
+                page.add(img, titulo, menor, tentativas)
                 entra_num(e)
-            page.scroll = True
+
             
     img = ft.Image(src=f"Why_Man-removebg-preview.png", width=150,height=150)
     titulo = ft.Text(value="Jogo de Adivinhação\n", size=50, color="black", font_family="Forte")
@@ -167,6 +165,7 @@ def main(page: ft.Page):
     resp = ft.TextField(label="Sua resposta aqui", text_align="center", color="black", width=350, border_radius=10, on_submit=opcao_inicio)
     page.add(texto, resp, ft.ElevatedButton("Confirmar", on_click=opcao_inicio, color="white"))
     page.update()
+    page.scroll = True
 
 
 ft.app(target=main)
