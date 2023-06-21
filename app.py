@@ -8,21 +8,41 @@ def main(page: ft.Page):
     page.horizontal_alignment = "center"
     page.bgcolor = "white"
     page.window_full_screen = True
+    page.scroll = True
     
-
-    random_num = randint(1,30)
-    global contagem, num_entrou, quantidade_num
+    
+    global contagem, num_entrou, quantidade_num, num_sorteio
+    num_sorteio = 30
+    random_num = randint(1,num_sorteio)
     contagem = 0
     num_entrou = []
 
+    def sair_jogo(e):
+        page.window_close()
 
     def vai_jogar_sim(e):
-        img = ft.Image(src=f"Why_Man-removebg-preview.png", width=150,height=150)
+        img = ft.Image(src=f"Trabalho Desenvolvimento Web/Projeto Pessoal/Jogo/Jogo _ v2.0/Why_Man-removebg-preview.png", width=150,height=150)
         titulo = ft.Text(value="Jogo de Adivinhação\n", size=50, color="black", font_family="Forte")
 
-        vai_jogar = ft.Text("Se abriu, é pra jogar né!", size=25, color="black")
+        vai_jogar = ft.Text("Se abriu, é pra jogar né! Mas caso não queira mesmo...\n", size=20, color="black")
         page.clean()
-        page.add(img, titulo, vai_jogar, ft.ElevatedButton("Iniciar", bgcolor="green", color="white", on_click=escolhe_qtd))       
+        page.add(img, titulo, vai_jogar, 
+                 ft.ElevatedButton("Iniciar", 
+                                   on_click=escolhe_qtd,
+                                   style=ft.ButtonStyle(
+                                                color={ft.MaterialState.HOVERED: ft.colors.WHITE, "": ft.colors.GREEN},
+                                                bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN, "": ft.colors.WHITE},
+                                                side={ft.MaterialState.DEFAULT: ft.BorderSide(1.5, ft.colors.GREEN)}
+                                    )   
+                                ), 
+                ft.ElevatedButton("Realmente sair", 
+                                  on_click=sair_jogo,
+                                  style=ft.ButtonStyle(
+                                            color={ft.MaterialState.HOVERED: ft.colors.WHITE, "": ft.colors.RED},
+                                            bgcolor={ft.MaterialState.HOVERED: ft.colors.RED, "": ft.colors.WHITE},
+                                            side={ft.MaterialState.DEFAULT: ft.BorderSide(1.5, ft.colors.RED)}
+                                    )
+                                ))       
 
     def reinicia_jogo(e):
         page.clean()
@@ -39,7 +59,7 @@ def main(page: ft.Page):
             page.update()
         elif resp.value.lower() == "não" or resp.value.lower() == "nao":
             text = ft.Text(f"Opção confirmada: {resp.value}", size=15, color="red")
-            page.add(text, ft.ElevatedButton("Tchau então!", on_click=vai_jogar_sim, bgcolor="red", color="white"))
+            page.add(text, ft.ElevatedButton("Tchau!", on_click=vai_jogar_sim, bgcolor="red", color="white"))
             page.update()
         else:
             erro = ft.Text("Você não está digitando o que se pede!", size=15, color="red")
@@ -47,18 +67,20 @@ def main(page: ft.Page):
             page.update()
 
     def escolhe_qtd(e):
-        global quantidade_num
+        global quantidade_num, num_sorteio
 
-        img = ft.Image(src=f"Why_Man-removebg-preview.png", width=150,height=150)
+        img = ft.Image(src=f"Trabalho Desenvolvimento Web/Projeto Pessoal/Jogo/Jogo _ v2.0/Why_Man-removebg-preview.png", width=150,height=150)
         titulo = ft.Text(value="Jogo de Adivinhação\n", size=50, color="black", font_family="Forte")
         page.clean()
         page.add(img, titulo)
         page.update()
 
-        text = ft.Text('Digite a quantidade de vezes que quer tentar sendo o máximo, 10 vezes!',size=20, color="black")
+        text1 = ft.Text(f'Será sorteado um número entre 1 e {num_sorteio}.\n', size=20, color="black")
+        text2 = ft.Text('Digite a quantidade de vezes que quer tentar sendo o máximo, 10 vezes!', size=20, color="black")
         quantidade_num = ft.TextField(label="Digite quantas vezes tentará", text_align="center", color="black", width=350, border_radius=10, on_submit=opcao_qtd)
         page.add(
-            text,
+            text1,
+            text2,
             quantidade_num,
             ft.ElevatedButton("Enviar", on_click=opcao_qtd, color="white")
             )
@@ -85,7 +107,7 @@ def main(page: ft.Page):
     def quantidade(e):
         global qtd_vezes, quantidade_num
         
-        img = ft.Image(src=f"Why_Man-removebg-preview.png", width=150,height=150)
+        img = ft.Image(src=f"Trabalho Desenvolvimento Web/Projeto Pessoal/Jogo/Jogo _ v2.0/Why_Man-removebg-preview.png", width=150,height=150)
         titulo = ft.Text(value="Jogo de Adivinhação\n", size=50, color="black", font_family="Forte")
         page.clean()
         page.add(img, titulo)
@@ -103,7 +125,7 @@ def main(page: ft.Page):
         page.add(entrada_num , ft.ElevatedButton("Verificar", on_click=verifica, color="white"))
         page.update()
 
-    def verifica(e):
+    def verifica(e):    
         global entrada_num, qtd_vezes, contagem    
         contagem += 1
 
@@ -116,47 +138,107 @@ def main(page: ft.Page):
             num_entrou.append(num)    
                    
             if num == random_num:
-                img = ft.Image(src=f"Why_Man-removebg-preview.png", width=150,height=150)
+                img = ft.Image(src=f"Trabalho Desenvolvimento Web/Projeto Pessoal/Jogo/Jogo _ v2.0/Why_Man-removebg-preview.png", width=150,height=150)
                 titulo = ft.Text(value="Jogo de Adivinhação\n", size=50, color="black", font_family="Forte")
-                win = ft.Text(f"Parabéns, você acertou na {contagem}ª tentativa! Número sorteado foi {random_num}", size=20, color="black")
-                texto = ft.Text(f"Números digitados: {num_entrou}.", size=20, color="black")
                 page.clean()
-                page.add(img, titulo, win, texto)
+                page.add(img, titulo,
+                    ft.Container(
+                        width=800,
+                        bgcolor = ft.colors.GREEN,
+                        border_radius = ft.border_radius.all(60),
+                        padding = 40,
+                        content = ft.Column(
+                            controls=[
+                                ft.Row(
+                                    controls = [ft.Text(f"Parabéns, você acertou na {contagem}ª tentativa! Número sorteado foi {random_num}", size=20, color="white")],
+                                    alignment="center"
+                                ),
+                                ft.Row(
+                                    controls = [ft.Text(f"Números digitados: {num_entrou}.", size=20, color="white")],
+                                    alignment="center"
+                                ),
+                            ],
+                        ),
+                    ),
+                    ft.ElevatedButton("Reiniciar", 
+                                        on_click=reinicia_jogo, 
+                                        style= ft.ButtonStyle(color={ft.MaterialState.HOVERED: ft.colors.WHITE, "": ft.colors.BLUE},
+                                                            bgcolor={ft.MaterialState.HOVERED: ft.colors.BLUE, "": ft.colors.WHITE},
+                                                            side={ft.MaterialState.DEFAULT: ft.BorderSide(1.5, ft.colors.BLUE)}
+                                        )
+                    ),
+                    ft.ElevatedButton("Sair", 
+                                        on_click=sair_jogo,
+                                        style= ft.ButtonStyle(color={ft.MaterialState.HOVERED: ft.colors.WHITE, "": ft.colors.RED},
+                                                            bgcolor={ft.MaterialState.HOVERED: ft.colors.RED, "": ft.colors.WHITE},
+                                                            side={ft.MaterialState.DEFAULT: ft.BorderSide(1.5, ft.colors.RED)}
+                                        )
+                    ),
+                )
                 page.update()
-                page.add(ft.ElevatedButton("Sair", on_click=reinicia_jogo, color="white"))
                 return
             
             elif contagem == qtd:
-                img = ft.Image(src=f"Why_Man-removebg-preview.png", width=150,height=150)
+                img = ft.Image(src=f"Trabalho Desenvolvimento Web/Projeto Pessoal/Jogo/Jogo _ v2.0/Why_Man-removebg-preview.png", width=150,height=150)
                 titulo = ft.Text(value="Jogo de Adivinhação\n", size=50, color="black", font_family="Forte")
-                lost = ft.Text(f"\n\nInfelizmente você não conseguiu adivinhar. O número sorteado foi {random_num}", size=20, color="black")
-                digitados = ft.Text(f"Números digitados: {num_entrou}", size=20, color="black")
                 page.clean()
-                page.add(img, titulo, lost, digitados)
+                page.add(img, titulo,
+                    ft.Container(
+                        width=800,
+                        bgcolor = ft.colors.RED,
+                        border_radius = ft.border_radius.all(60),
+                        padding = 40,
+                        content = ft.Column(
+                            controls = [
+                                ft.Row(
+                                    controls = [ft.Text(f"Infelizmente você não conseguiu adivinhar. O número sorteado foi {random_num}", size=20, color="black")],
+                                    alignment="center"
+                                ),
+                                ft.Row(
+                                    controls = [ft.Text(f"Números digitados: {num_entrou}", size=20, color="black")],
+                                    alignment="center"
+                                ),
+                            ],
+                        ),
+                    ),
+                    ft.ElevatedButton("Reiniciar", 
+                                        on_click=reinicia_jogo, 
+                                        style= ft.ButtonStyle(color={ft.MaterialState.HOVERED: ft.colors.WHITE, "": ft.colors.BLUE},
+                                                            bgcolor={ft.MaterialState.HOVERED: ft.colors.BLUE, "": ft.colors.WHITE},
+                                                            side={ft.MaterialState.DEFAULT: ft.BorderSide(1.5, ft.colors.BLUE)}
+                                        )
+                    ),
+                    ft.ElevatedButton("Sair", 
+                                        on_click=sair_jogo,
+                                        style= ft.ButtonStyle(color={ft.MaterialState.HOVERED: ft.colors.WHITE, "": ft.colors.RED},
+                                                            bgcolor={ft.MaterialState.HOVERED: ft.colors.RED, "": ft.colors.WHITE},
+                                                            side={ft.MaterialState.DEFAULT: ft.BorderSide(1.5, ft.colors.RED)}
+                                        )
+                    ),
+                )
                 page.update()
-                page.add(ft.ElevatedButton("Sair", on_click=reinicia_jogo, color="white"))
                 return
 
             elif num > random_num:
-                img = ft.Image(src=f"Why_Man-removebg-preview.png", width=150,height=150)
+                img = ft.Image(src=f"Trabalho Desenvolvimento Web/Projeto Pessoal/Jogo/Jogo _ v2.0/Why_Man-removebg-preview.png", width=150,height=150)
                 titulo = ft.Text(value="Jogo de Adivinhação\n", size=50, color="black", font_family="Forte")
-                maior = ft.Text(f"Hmm, {num} é maior, digite um número menor.\n", size=20, color="black")
+                maior = ft.Text(f"Hmm, {num} é maior do que o sorteado, digite um número menor.\n", size=20, color="black")
                 tentativas = ft.Text(f'Tentativa: {contagem + 1}', size=20, color="black")
                 page.clean()
                 page.add(img, titulo, maior, tentativas)
                 entra_num(e)
 
             elif num < random_num:
-                img = ft.Image(src=f"Why_Man-removebg-preview.png", width=150,height=150)
+                img = ft.Image(src=f"Trabalho Desenvolvimento Web/Projeto Pessoal/Jogo/Jogo _ v2.0/Why_Man-removebg-preview.png", width=150,height=150)
                 titulo = ft.Text(value="Jogo de Adivinhação\n", size=50, color="black", font_family="Forte")
-                menor = ft.Text(f"Hmm, {num} é menor, digite um número maior.\n", size=20, color="black")
+                menor = ft.Text(f"Hmm, {num} é menor do que o sorteado, digite um número maior.\n", size=20, color="black")
                 tentativas = ft.Text(f'Tentativa: {contagem + 1}', size=20, color="black")
                 page.clean()
                 page.add(img, titulo, menor, tentativas)
                 entra_num(e)
 
             
-    img = ft.Image(src=f"Why_Man-removebg-preview.png", width=150,height=150)
+    img = ft.Image(src=f"Trabalho Desenvolvimento Web/Projeto Pessoal/Jogo/Jogo _ v2.0/Why_Man-removebg-preview.png", width=150,height=150)
     titulo = ft.Text(value="Jogo de Adivinhação\n", size=50, color="black", font_family="Forte")
     page.add(img, titulo)
     page.update()
@@ -165,7 +247,7 @@ def main(page: ft.Page):
     resp = ft.TextField(label="Sua resposta aqui", text_align="center", color="black", width=350, border_radius=10, on_submit=opcao_inicio)
     page.add(texto, resp, ft.ElevatedButton("Confirmar", on_click=opcao_inicio, color="white"))
     page.update()
-    page.scroll = True
+    
 
 
 ft.app(target=main)
